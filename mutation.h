@@ -42,16 +42,15 @@ public:
 
 struct Individ{
 private:
-  int nMut_;
   vector<Mutation> muts_;
   int age_; 
   bool isFemale_; 
-  bool isSick_;
+  bool isPatient_;
 public:
   Individ(){
     age_ = 0; 
     isFemale_ = false;
-    isSick_ = false;
+    isPatient_ = false;
   }
   void addMut(Mutation mut){
     muts_.push_back(mut);
@@ -62,8 +61,12 @@ public:
     }
   }
   void setAge(int age){ age_ = age; }
-  void setSex(int isFemale){ isFemale_ = isFemale; }
+  void setSex(bool isFemale){ isFemale_ = isFemale; }
+  void setPatient(bool isPatient){ isPatient_ = isPatient; }
   int getAge(){ return age_; }
   int isFemale(){ return isFemale_; }
+  int isPatient(){ return isPatient_; }
+  Mutation getNMuts{ return muts_.size(); }
+  Mutation getIthMut(int index){ return muts_[index]; }
 };
 

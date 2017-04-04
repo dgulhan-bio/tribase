@@ -34,6 +34,7 @@ static inline string &trim(string &s) {
 struct Parser{
 private:
   vector<Individ> individs_;
+  vector<string> inFiles;
   int getBaseDigit(char baseChar){
     switch(baseChar){
     case 'A': 
@@ -50,7 +51,7 @@ private:
     }
   }
 
-  int getBaseNum(char* baseChar){ 
+  int getBaseNum(const char* baseChar){ 
     int baseLength = strlen(baseChar);
     if(baseLength == 0) return -1;
     else if(baseLength == 1) return getBaseDigit(baseChar[0]);
@@ -61,6 +62,17 @@ private:
         num += digit*pow(10, baseLength - i - 1);
       }
       return num;
+    }
+  }
+  
+  int getStrandNum(const char* strand){
+    switch(strand[0]){
+    case '+':
+      return 1;
+    case '-':
+      return -1;
+    default:
+      return 0;
     }
   }
 
@@ -79,12 +91,14 @@ public:
       return;
     }
     string line;
-    vector<string> inFiles; 
     while(getline(fileList, line)){
       inFiles.push_back(line);
       cout << "file in:" << line << endl;
     }
-
+  }
+  
+  vector<Individ> readIndivids(){
+    vector<Individ> individs;
     for(int fileInd = 0; fileInd < inFiles.size(); fileInd++){
       ifstream inputFile(inFiles[fileInd]);
       int state = 0;
@@ -92,8 +106,6 @@ public:
       string lineTmp;
       while(getline(inputFile, lineTmp)){
         trim(lineTmp);
-	//        cout << "state = " << state << endl;
-        //cout << lineTmp << endl;
         if(lineTmp.length() == 0) continue;
         if(state == 0){
 	  state = 1;
@@ -118,10 +130,16 @@ public:
           
           int baseIn = getBaseNum(baseInStr.c_str());
           int baseOut = getBaseNum(baseOutStr.c_str());
-          int tribase = getBaseNum(tribaseStr.c_str());          
-
+          int tribase = getBaseNum(tribaseStr.c_str());
+          
+          int strand = getStrandNum(strandStr.c_str());
+          
+	  Mutation mut(baseIn, baseOut, strand, pos, chrom, tribase);          
+          current.addMut(mut);
         }
       }
+      individs.push_back(current);
     }
+    return individs;
   }
 };

@@ -107,7 +107,7 @@ public:
           string tribaseStr;
           string dummy; 
           string strandStr;
-          stringstream lineStr;
+          stringstream lineStream;
           lineStream << lineTmp;
           lineStream >> chromStr >> pos >> baseInStr >> baseOutStr >> tribaseStr >> dummy >> strandStr;
           cout << chromStr <<  " " << pos << " " << baseInStr << " " << baseOutStr << " "<< tribaseStr <<  " " << strandStr << endl; 

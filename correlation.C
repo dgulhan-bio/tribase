@@ -15,7 +15,8 @@ TH1D* calculateCF(vector<Individ> individs, int chromNum = 1){
   int nIndivid = individs.size();
   double length = ((double)chromSize[chromNum])*pow(10,6);
   cout << length << endl;
-  TH1D * histCF = new TH1D(Form("histCF_chrom%d", chromNum), "", 40, 0.0001, 0.999999);
+  int nPair = 0;
+  TH1D * histCF = new TH1D(Form("histCF_chrom%d", chromNum), "", 40, 0.00001, 0.999999);
   for(int ind = 0; ind < nIndivid; ind++){
     int nMut = individs[ind].getNMuts();
     for(int iMut = 0; iMut < nMut; iMut++){
@@ -25,21 +26,25 @@ TH1D* calculateCF(vector<Individ> individs, int chromNum = 1){
         if(iMut == jMut) continue;
         Mutation * mut2 = individs[ind].getIthMut(jMut);
         if(mut2->getChrom() != chromNum) continue; 
+        if(!(mut1->getBaseIn() == mut2->getBaseIn() && mut1->getStrand() == mut2->getStrand())) continue;
         double deltaPos = fabs(((double)mut1->getPos()) - ((double) mut2->getPos()))/length;
-        if(deltaPos==0) cout << deltaPos << endl;
-        histCF->Fill(deltaPos);     
+        //if(deltaPos==0) cout << deltaPos << endl;
+        histCF->Fill(deltaPos);
+        nPair++;     
       }
     } 
   }
-  histCF->Scale(1./2);
+  histCF->Scale(1./nPair);
+  cout << "CF npair = " << ((double)nPair/2.) << endl; 
   return histCF;
 }
 
 TH1D* calculateMI(vector<Individ> individs, int chromNum = 1){
   int nIndivid = individs.size();
   double length = ((double)chromSize[chromNum])*pow(10,6);
-  TH1D * histMI = new TH1D(Form("histMI_chrom%d", chromNum), "", 40, 0.00001, 0.99999);
+  TH1D * histMI = new TH1D(Form("histMI_chrom%d", chromNum), "", 40, 0.00001, 0.999999);
   int nMI = 0; 
+  int nPair = 0;
   for(int ind = 0; ind < nIndivid; ind++){
     int nMut1 = individs[ind].getNMuts();
     for(int iMut = 0; iMut < nMut1; iMut++){
@@ -53,12 +58,14 @@ TH1D* calculateMI(vector<Individ> individs, int chromNum = 1){
           if(mut2->getChrom() != chromNum) continue; 
           //cout << "pos1 = " << mut1->getPos() << " pos2 =" << mut2->getPos() << endl;
 	  double deltaPos = fabs(((double)mut1->getPos()) - ((double) mut2->getPos()))/length;
-	  histMI->Fill(deltaPos);   
+	  histMI->Fill(deltaPos);
+          nPair++;   
         }
       }
     }
   }
-  histMI->Scale(1./((double)(nIndivid-1)));
+  histMI->Scale(1./nPair);
+  cout << "MI npair = " << (double)nPair/(nIndivid-1) << endl; 
   return histMI;
 }
 
@@ -75,7 +82,7 @@ int main(int argc, char *argv[]){
     histsCF[i-1] = calculateCF(individs, i);
     histsMI[i-1] = calculateMI(individs, i);
   }
-  TFile * outf = new TFile("test.root", "recreate");
+  TFile * outf = new TFile("testSameBaseIn.root", "recreate");
   for(int i = 1; i < 23; i++){
     histsCF[i-1]->Write();
     histsMI[i-1]->Write();

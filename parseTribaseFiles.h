@@ -39,50 +39,67 @@ static inline string &trim(string &s) {
   return ltrim(rtrim(s));
 }
 
+int getBaseDigit(char baseChar){
+  switch(baseChar){
+  case 'A': 
+    return 0;
+  case 'C': 
+    return 1;
+  case 'G':
+    return 2;
+  case 'T':
+    return 3;
+  default:
+    cout << "invalid base" << endl;
+    return -1;
+  }
+}
+
+char convertDigitToBase(int digit){
+  switch(digit){
+  case 0: 
+    return 'A';
+  case 1: 
+    return 'C';
+  case 2:
+    return 'G';
+  case 3:
+    return 'T';
+  default:
+    cout << "invalid base" << endl;
+    return -1;
+  }
+}
+
+int getBaseNum(const char* baseChar){ 
+  int baseLength = strlen(baseChar);
+  if(baseLength == 0) return -1;
+  else if(baseLength == 1) return getBaseDigit(baseChar[0]);
+  else{
+    int num = pow(10,baseLength);
+    for(int i = 0; i < baseLength; i++){
+      int digit = getBaseDigit(baseChar[i]);
+      num += digit*pow(10, baseLength - i - 1);
+    }
+    return num;
+  }
+}
+  
+int getStrandNum(const char* strand){
+  switch(strand[0]){
+  case '+':
+    return 1;
+  case '-':
+    return -1;
+  default:
+    return 0;
+  }
+}
+
 struct Parser{
 private:
   vector<Individ> individs_;
   vector<string> inFiles;
-  int getBaseDigit(char baseChar){
-    switch(baseChar){
-    case 'A': 
-      return 0;
-    case 'C': 
-      return 1;
-    case 'G':
-      return 2;
-    case 'T':
-      return 3;
-    default:
-      cout << "invalid base" << endl;
-      return -1;
-    }
-  }
-
-  int getBaseNum(const char* baseChar){ 
-    int baseLength = strlen(baseChar);
-    if(baseLength == 0) return -1;
-    else if(baseLength == 1) return getBaseDigit(baseChar[0]);
-    else{
-      int num = pow(10,baseLength);
-      for(int i = 0; i < baseLength; i++){
-        int digit = getBaseDigit(baseChar[i]);
-        num += digit*pow(10, baseLength - i - 1);
-      }
-      return num;
-    }
-  }
-  
-  int getStrandNum(const char* strand){
-    switch(strand[0]){
-    case '+':
-      return 1;
-    case '-':
-      return -1;
-    default:
-      return 0;
-    }
-  }
 
 public:
   vector<Individ> getIndivids(){

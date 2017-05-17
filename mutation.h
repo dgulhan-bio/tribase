@@ -24,7 +24,7 @@ private:
   int chrom_;
   int tribase_;  
 public:  
-  Mutation(int baseIn, int baseOut, int strand, int pos, int chrom, int tribase = 1000){
+  Mutation(int baseIn, int baseOut,  int pos, int chrom, int strand = 0, int tribase = 1000){
     baseIn_ = baseIn;
     baseOut_ = baseOut;
     strand_ = strand;

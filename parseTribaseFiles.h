@@ -105,8 +105,7 @@ public:
     }
   }
   
-  vector<Individ> readIndivids(){
-    vector<Individ> individs;
+  vector<Individ> readIndividsFromTribase(){
     for(int fileInd = 0; fileInd < inFiles.size(); fileInd++){
       ifstream inputFile(inFiles[fileInd]);
       int state = 0;
@@ -139,15 +138,65 @@ public:
           int baseIn = getBaseNum(baseInStr.c_str());
           int baseOut = getBaseNum(baseOutStr.c_str());
           int tribase = getBaseNum(tribaseStr.c_str());
-          
           int strand = getStrandNum(strandStr.c_str());
           
-	  Mutation mut(baseIn, baseOut, strand, pos, chrom, tribase);          
+	  Mutation mut(baseIn, baseOut, pos, chrom, strand, tribase);          
           current.addMut(mut);
         }
+        //cout << "nMuts" << current.getNMuts() << endl;
       }
-      individs.push_back(current);
+      individs_.push_back(current);
     }
-    return individs;
+    individs_.size();
+    return individs_;
+  }
+  
+  vector<Individ> readIndividsSnvMnvVcf(){
+    for(int fileInd = 0; fileInd < inFiles.size(); fileInd++){
+      ifstream inputFile(inFiles[fileInd]);
+      int state = 0;
+      Individ current;
+      string lineTmp;
+      while(getline(inputFile, lineTmp)){
+        //cout << lineTmp << endl;
+        trim(lineTmp);
+        if(lineTmp.length() == 0) continue;
+        if(string::npos == lineTmp.find("#CHROM")){
+	  state = 1;
+          getline(inputFile, lineTmp);
+        }
+        if(state == 1){
+          string chromStr; 
+          int pos;
+          string baseInStr;
+          string baseOutStr;
+          string strandStr;
+          string dummy1; 
+          string dummy2; 
+          string dummy3; 
+          string dummy4; 
+          stringstream lineStream;
+          lineStream << lineTmp;
+          lineStream >> chromStr >> pos >> dummy1 >> baseInStr >> baseOutStr >> dummy2 >> dummy3 >> dummy4;
+          //cout << chromStr << " " << pos << " " << dummy1 << " " << " " <<  baseInStr << " " <<  baseOutStr << " " << dummy2 << " " << dummy3 << " " << dummy4 << endl;
+       
+          int chrom;
+          if(chromStr == "X") chrom = 23;
+          else chrom = atoi(chromStr.c_str());
+          
+          int baseIn = getBaseNum(baseInStr.c_str());
+          int baseOut = getBaseNum(baseOutStr.c_str());
+          
+          
+	  Mutation mut(baseIn, baseOut, pos, chrom);          
+          current.addMut(mut);
+          //cout << "nMut for loop=" << current.getNMuts() << endl;
+        }
+      }
+      //cout << "nMuts after loop=" << current.getNMuts() << endl;
+      individs_.push_back(current);
+      //cout << "size individs = " << individs_.size() << endl;
+    }
+    return individs_;
   }
 };

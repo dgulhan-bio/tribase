@@ -125,6 +125,10 @@ public:
   vector<Individ> readIndividsFromTribase(){
     for(int fileInd = 0; fileInd < inFiles.size(); fileInd++){
       ifstream inputFile(inFiles[fileInd]);
+      if(!inputFile.is_open()){
+        cout << "file cannot be opened" << endl;
+        return individs_;
+      }
       int state = 0;
       Individ current;
       string lineTmp;
@@ -150,6 +154,7 @@ public:
        
           int chrom;
           if(chromStr == "X") chrom = 23;
+          if(chromStr == "Y") chrom = 24;
           else chrom = atoi(chromStr.c_str());
           
           int baseIn = getBaseNum(baseInStr.c_str());
@@ -178,7 +183,7 @@ public:
         //cout << lineTmp << endl;
         trim(lineTmp);
         if(lineTmp.length() == 0) continue;
-        if(string::npos == lineTmp.find("#CHROM")){
+        if(string::npos != lineTmp.find("#CHROM")){
 	  state = 1;
           getline(inputFile, lineTmp);
         }
@@ -195,12 +200,15 @@ public:
           stringstream lineStream;
           lineStream << lineTmp;
           lineStream >> chromStr >> pos >> dummy1 >> baseInStr >> baseOutStr >> dummy2 >> dummy3 >> dummy4;
-          //cout << chromStr << " " << pos << " " << dummy1 << " " << " " <<  baseInStr << " " <<  baseOutStr << " " << dummy2 << " " << dummy3 << " " << dummy4 << endl;
-       
           int chrom;
           if(chromStr == "X") chrom = 23;
+          else if(chromStr == "Y") chrom = 24;
           else chrom = atoi(chromStr.c_str());
-          
+          if(chrom == 0){
+            cout << "chrom=" << chrom << endl;
+            cout << chromStr << " " << pos << " " << dummy1 << " " << " " <<  baseInStr << " " <<  baseOutStr << " " << dummy2 << " " << dummy3 << " " << dummy4 << endl;
+       
+	  }
           int baseIn = getBaseNum(baseInStr.c_str());
           int baseOut = getBaseNum(baseOutStr.c_str());
           

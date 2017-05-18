@@ -13,7 +13,38 @@
 #include <math.h>
 #include "parseTribaseFiles.h"
 
+const char replacement[][3] =
+  {                 
+    {'B', 'D', 'E'},
+    {'F', 'H', 'I'},
+    {'J', 'K', 'L'},
+    {'M', 'N', 'O'}
+  };
+const char base_in_array[][3] =
+  {                 
+    {'A', 'A', 'A'},
+    {'C', 'C', 'C'},
+    {'G', 'G', 'G'},
+    {'T', 'T', 'T'}
+  };
+const char base_out_array[][3] =
+  {                 
+    {'C', 'G', 'T'},
+    {'A', 'G', 'T'},
+    {'A', 'C', 'T'},
+    {'A', 'C', 'G'}
+  };
 
+const char assign_alphabet(char base_in, char base_out){
+  for(int row = 0; row < 4; row++){
+    for(int column = 0; column < 3; column++){
+      if(base_in == base_in_array[row][column] && base_out == base_out_array[row][column]){ 
+        return replacement[row][column];
+      }
+    }
+  }
+  return 'Z';
+}
 
 void parse_reference_genome(string fileList){
   
@@ -99,8 +130,9 @@ void parse_reference_genome(string fileList){
             cout << "Error parser read doesn't match base in " << searchPos << endl;
             return;
 	  }
-  
-          string baseOutStr(1,  convertDigitToBase(currentMut->getBaseOut()));
+          
+          char snv = assign_alphabet(base, convertDigitToBase(currentMut->getBaseOut()));
+          string baseOutStr(1,  snv);
 	  dummyString.replace(searchPos - prevPos - 1, 1, baseOutStr);
 	  if(searchPos == 248551710) cout << "dummy = " << dummyString << endl;
           
@@ -147,3 +179,4 @@ int main(int argc, char *argv[]){
   string fileList = argv[1];
   parse_reference_genome(fileList);
 }
+

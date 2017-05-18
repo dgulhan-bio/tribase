@@ -15,13 +15,12 @@
 
 using namespace std;
 
+
 struct Mutation{
 private:
   int baseIn_;
   int baseOut_;
   int strand_; 
-  int pos_;
-  int chrom_;
   int tribase_;  
 public:  
   Mutation(int baseIn, int baseOut,  int pos, int chrom, int strand = 0, int tribase = 1000){
@@ -35,9 +34,22 @@ public:
   int getBaseIn(){ return baseIn_; }
   int getBaseOut(){ return baseOut_; }
   int getStrand(){ return strand_; }
-  int getPos(){ return pos_; }
+  int getPos(){   return pos_; }
   int getChrom(){ return chrom_; }
   int getTribase(){ return tribase_; }
+
+public:
+
+  int pos_;
+  int chrom_;
+};
+
+struct less_than_key
+{
+  inline bool operator() (const Mutation& mut1, const Mutation& mut2)
+  {
+    return (mut1.chrom_ < mut2.chrom_ || (mut1.chrom_ == mut2.chrom_ &&  mut1.pos_ < mut2.pos_));
+  }
 };
 
 struct Individ{

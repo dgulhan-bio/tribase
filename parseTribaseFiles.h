@@ -178,6 +178,7 @@ public:
       ifstream inputFile(inFiles[fileInd]);
       int state = 0;
       Individ current;
+      vector<Mutation> muts;
       string lineTmp;
       while(getline(inputFile, lineTmp)){
         //cout << lineTmp << endl;
@@ -213,11 +214,17 @@ public:
           int baseOut = getBaseNum(baseOutStr.c_str());
           
           
-	  Mutation mut(baseIn, baseOut, pos, chrom);          
-          current.addMut(mut);
+	  Mutation mut(baseIn, baseOut, pos, chrom);       
+          muts.push_back(mut);   
+          //current.addMut(mut);
           //cout << "nMut for loop=" << current.getNMuts() << endl;
         }
       }
+      std::sort(muts.begin(), muts.end(), less_than_key());
+      cout << 2 << endl;
+
+      current.setMuts(muts);
+      muts.clear();
       //cout << "nMuts after loop=" << current.getNMuts() << endl;
       individs_.push_back(current);
       //cout << "size individs = " << individs_.size() << endl;

@@ -87,7 +87,7 @@ void parse_reference_genome(string fileList){
       }
       if (state == 2){
 	float percentPos = (100*((float)currentPos)/((float)searchPos));
-        if(percentPos - (int)percentPos == 0) cout << "currentPos/searchPos % = " << percentPos << endl;
+        //if(percentPos - (int)percentPos == 0) cout << "currentPos/searchPos % = " << percentPos << endl;
         string dummyString;
         stringstream lineStream;
         lineStream << lineTmp;
@@ -130,13 +130,13 @@ void parse_reference_genome(string fileList){
         prevPos = currentPos;
         if(lineAfter < 3) lineAfter++;
         if(lineAfter == 2){
-          //cout << "position: " << prevPos << endl;
-          //cout << composed << endl;
+          cout << "position: " << prevPos << endl;
+          cout << composed << endl;
         }
         if(currentPos + 80 > sizeChrom ){
           state = 0;
-          //cout << "position: " << prevPos << endl;
-          //cout << composed << endl;
+          cout << "position: " << prevPos << endl;
+          cout << composed << endl;
         }
       }
     }

@@ -105,6 +105,9 @@ public:
   vector<Individ> getIndivids(){
     return individs_;
   }
+  string getIthFileName(int i){
+    return inFiles[i]; 
+  }
 
   Parser(string inputFiles){
     //Load the file list in the input txt file

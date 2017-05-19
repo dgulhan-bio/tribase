@@ -47,27 +47,31 @@ const char assign_alphabet(char base_in, char base_out){
 }
 
 void parse_reference_genome(string fileList){
-  
+ 
   //parse snvs
   Parser *parser = new Parser(fileList);
   vector<Individ> individs;
-
+  
    individs = parser->readIndividsSnvMnvVcf();
    //individs = parser->readIndividsFromTribase();
- 
+  
   int nIndivid = individs.size();  
-  cout << nIndivid << endl;
   
   for(int ind = 0; ind < nIndivid; ind++){
+    ofstream outputfile;
+    std::ostringstream streamOutputFile;
+    streamOutputFile << "output/" << parser->getIthFileName(ind) << ".txt";
+    std::string outFileName = streamOutputFile.str();
+    outputfile.open(outFileName);
     
     int nMut = individs[ind].getNMuts();
-    cout << nMut << endl;
+    //outputfile << "#Individ " << parser->getIthFileName(ind) << " totalMut" << nMut << "\n";
     int iMut = 0;
     Mutation *currentMut = individs[ind].getIthMut(iMut);
      
     int searchChrom = currentMut -> getChrom();
     int searchPos = currentMut -> getPos();
-    cout << "searchChrom = " << searchChrom << " searchPos = " <<  searchPos << endl;
+    //cout << "searchChrom = " << searchChrom << " searchPos = " <<  searchPos << endl;
     int currentPos = 0; 
     int prevPos = 0;
     int lineAfter = 2;
@@ -103,7 +107,7 @@ void parse_reference_genome(string fileList){
         else{
           chromNum = atoi(chromNumStr.c_str());
         }
-        cout << "state = " << 1 << " searchChrom = " << searchChrom << " chromNum = " << chromNum << endl;
+        //cout << "state = " << 1 << " searchChrom = " << searchChrom << " chromNum = " << chromNum << endl;
         sizeChrom = atoi(sizeChromStr.c_str());
         currentPos = 0;
         prevPos = 0;
@@ -113,7 +117,8 @@ void parse_reference_genome(string fileList){
         getline(inputFileGenome, lineTmp);       
       }
       else if (searchChrom == chromNum && state == 1 ){
-        cout << "state = " << 2 << " searchChrom = " << searchChrom << " chromNum = " << chromNum << endl;   
+        outputfile << "#Chrom" << chromNum << "\n" ; 
+        //cout << "state = " << 2 << " searchChrom = " << searchChrom << " chromNum = " << chromNum << endl;   
         state = 2;
       }
       if (state == 2){
@@ -134,14 +139,11 @@ void parse_reference_genome(string fileList){
           char snv = assign_alphabet(base, convertDigitToBase(currentMut->getBaseOut()));
           string baseOutStr(1,  snv);
 	  dummyString.replace(searchPos - prevPos - 1, 1, baseOutStr);
-	  if(searchPos == 248551710) cout << "dummy = " << dummyString << endl;
-          
+	  
 	  if(lineAfter >= 2){
             composed = stringMem1 + stringMem2 + dummyString;
-	  }else{
-            composed = composed + dummyString;
-          }
-          
+	  }
+	  
           iMut++;
           currentMut = individs[ind].getIthMut(iMut);
           
@@ -152,8 +154,8 @@ void parse_reference_genome(string fileList){
           
         }
         
-        if(lineAfter < 2){
-	  composed = composed + dummyString;
+        if(lineAfter <= 2 && lineAfter>0){
+	  composed += dummyString;
         } 
 
         stringMem2 = stringMem1;
@@ -162,13 +164,13 @@ void parse_reference_genome(string fileList){
         prevPos = currentPos;
         if(lineAfter < 3) lineAfter++;
         if(lineAfter == 2){
-          cout << "position: " << prevPos << endl;
-          cout << composed << endl;
+          outputfile << "position: " << prevPos << "\n";
+          outputfile << composed << "\n";
         }
         if(currentPos + 80 > sizeChrom ){
           state = 0;
-          cout << "position: " << prevPos << endl;
-          cout << composed << endl;
+          outputfile << "position: " << prevPos << "\n";
+          outputfile << composed << "\n";
         }
       }
     }
